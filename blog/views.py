@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from models import User, get_todays_recent_posts
 from flask import Flask, request, session, redirect, url_for, render_template, flash
 
@@ -15,14 +17,14 @@ def register():
         password = request.form['password']
 
         if len(username) < 1:
-            flash('Your username must be at least one character.')
+            flash(u'Su nombre de usuario debería tener por lo menos un carácter.')
         elif len(password) < 5:
-            flash('Your password must be at least 5 characters.')
+            flash(u'Su contraseña debería tener por lo menos cinco caractéres.')
         elif not User(username).register(password):
-            flash('A user with that username already exists.')
+            flash(u'Ya existe un usuario con ese nombre.')
         else:
             session['username'] = username
-            flash('Logged in.')
+            flash(u'Ya entró.')
             return redirect(url_for('index'))
 
     return render_template('register.html')
@@ -34,10 +36,10 @@ def login():
         password = request.form['password']
 
         if not User(username).verify_password(password):
-            flash('Invalid login.')
+            flash(u'Entrada invalida.')
         else:
             session['username'] = username
-            flash('Logged in.')
+            flash(u'Ya entró.')
             return redirect(url_for('index'))
 
     return render_template('login.html')
@@ -45,7 +47,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    flash('Logged out.')
+    flash(u'Ya salió.')
     return redirect(url_for('index'))
 
 @app.route('/add_post', methods=['POST'])
@@ -56,11 +58,11 @@ def add_post():
 
     if not title or not tags or not text:
         if not title:
-            flash('You must give your post a title.')
+            flash(u'Debes proveer un título a su mensaje.')
         if not tags:
-            flash('You must give your post at least one tag.')
+            flash(u'Debes proveer por lo menos una etiqueta a su mensaje.')
         if not text:
-            flash('You must give your post a text body.')
+            flash(u'Debes escribir un mensaje.')
     else:
         User(session['username']).add_post(title, tags, text)
 
@@ -71,12 +73,12 @@ def like_post(post_id):
     username = session.get('username')
 
     if not username:
-        flash('You must be logged in to like a post.')
+        flash(u'Debes de entrar al sitio para poder dar un "Me gusta".')
         return redirect(url_for('login'))
 
     User(username).like_post(post_id)
 
-    flash('Liked post.')
+    flash(u'Me gusta.')
     return redirect(request.referrer)
 
 @app.route('/profile/<username>')
