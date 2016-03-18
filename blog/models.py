@@ -98,6 +98,18 @@ class User:
 
         return graph.cypher.execute(query, they=other.username, you=self.username)[0]
 
+    def follow_user(self, followed_username):
+        follower = self.find()
+        followed_user = User(followed_username).find()
+        graph.create_unique(Relationship(follower, "FOLLOWS", followed_user))
+
+    def is_following(self, followed_username):
+        follower = self.find()
+        followed_user = User(followed_username).find()
+        if (graph.match_one(follower, "FOLLOWS", followed_user)):
+            return True
+        return False
+
 def get_todays_recent_posts():
     query = """
     MATCH (user:User)-[:PUBLISHED]->(post:Post)<-[:TAGGED]-(tag:Tag)

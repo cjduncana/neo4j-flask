@@ -81,6 +81,19 @@ def like_post(post_id):
     flash(u'Me gusta.')
     return redirect(request.referrer)
 
+@app.route('/follow/<followed_username>')
+def follow_user(followed_username):
+    username = session.get('username')
+
+    if not username:
+        flash(u'Debes de entrar al sitio para poder seguir a este usuario.')
+        return redirect(url_for('login'))
+
+    User(username).follow_user(followed_username)
+
+    flash(u'Estás siguiendo a ' + followed_username + '.')
+    return redirect(url_for('profile', username=followed_username))
+
 @app.route('/profile/<username>')
 def profile(username):
     logged_in_username = session.get('username')
@@ -90,6 +103,7 @@ def profile(username):
     posts = user_being_viewed.get_recent_posts()
 
     similar = []
+    already_followed = False
     common = []
 
     if logged_in_username:
@@ -98,6 +112,7 @@ def profile(username):
         if logged_in_user.username == user_being_viewed.username:
             similar = logged_in_user.get_similar_users()
         else:
+            already_followed = logged_in_user.is_following(user_being_viewed_username)
             common = logged_in_user.get_commonality_of_user(user_being_viewed)
 
     return render_template(
@@ -105,5 +120,6 @@ def profile(username):
         username=username,
         posts=posts,
         similar=similar,
+        already_followed=already_followed,
         common=common
     )

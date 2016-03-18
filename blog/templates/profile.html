@@ -19,6 +19,11 @@
         <h3>Sus mensajes más recientes:</h3>
 
     {% else %}
+      {% if already_followed %}
+        Ya estás siguiendo a este usuario
+      {% else %}
+        <a href="{{ url_for('follow_user', followed_username=username) }}">¿Quieres seguir a este usuario?</a>
+      {% endif %}
 
   <p>{{ username }} le ha gustado {{ common.likes }} de sus mensajes y
       {% if common.tags %}
