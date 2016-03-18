@@ -77,9 +77,9 @@ class User:
         MATCH (you:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag:Tag),
               (they:User)-[:PUBLISHED]->(:Post)<-[:TAGGED]-(tag)
         WHERE you.username = {username} AND you <> they
-        WITH they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
+        WITH you, they, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag) AS len
         ORDER BY len DESC LIMIT 3
-        RETURN they.username AS similar_user, tags
+        RETURN they.username AS similar_user, tags, EXISTS((you)-[:FOLLOWS]->(they)) AS is_following
         """
 
         return graph.cypher.execute(query, username=self.username)

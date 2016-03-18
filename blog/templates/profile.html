@@ -11,6 +11,9 @@
             <p>
             <a href="{{ url_for('profile', username=user.similar_user) }}">{{ user.similar_user }}</a>
             también ha escrito sobre <i>{{ ", ".join(user.tags) }}</i>
+            {% if not user.is_following %}
+              <a href="{{ url_for('follow_user', followed_username=user.similar_user) }}">¿Seguir a este usuario?</a>
+            {% endif %}
             </p>
           {% else %}
             <p>No hay usuarios que ha escrito mensajes parecidos a los suyos!</p>
